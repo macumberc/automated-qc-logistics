@@ -35,9 +35,8 @@ def generate_and_upload_images(
     """
     from PIL import Image, ImageDraw, ImageFont  # noqa: E402
 
-    volume_path = f"/Volumes/{fqn}/{VOLUME_NAME}"
-
     catalog, schema = fqn.split(".", 1)
+    volume_path = f"/Volumes/{catalog}/{schema}/{VOLUME_NAME}"
     spark.sql(
         f"CREATE VOLUME IF NOT EXISTS {fqn}.{VOLUME_NAME} "
         f"COMMENT 'Synthetic inspection images for automated QC demo'"

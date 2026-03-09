@@ -66,7 +66,22 @@ def build_genie_payload(fqn: str, warehouse_id: str, username: str) -> dict[str,
             ]
         },
         "data_sources": {
-            "tables": [
+            "tables": sorted([
+                {
+                    "identifier": f"{fqn}.{DOCK_SCANS_TABLE}",
+                    "description": [
+                        "Shipment-level scan summaries. Each row is one shipment processed "
+                        "at a loading dock with item counts, pass/fail/warning breakdowns, "
+                        "SKU match rates, damage rates, and carrier information."
+                    ],
+                    "column_configs": [
+                        {"column_name": "scan_date", "enable_format_assistance": True},
+                        {"column_name": "facility_id", "enable_format_assistance": True, "enable_entity_matching": True},
+                        {"column_name": "direction", "enable_format_assistance": True, "enable_entity_matching": True},
+                        {"column_name": "carrier_name", "enable_format_assistance": True, "enable_entity_matching": True},
+                        {"column_name": "status", "enable_format_assistance": True, "enable_entity_matching": True},
+                    ],
+                },
                 {
                     "identifier": f"{fqn}.{INSPECTION_TABLE}",
                     "description": [
@@ -87,21 +102,6 @@ def build_genie_payload(fqn: str, warehouse_id: str, username: str) -> dict[str,
                     ],
                 },
                 {
-                    "identifier": f"{fqn}.{DOCK_SCANS_TABLE}",
-                    "description": [
-                        "Shipment-level scan summaries. Each row is one shipment processed "
-                        "at a loading dock with item counts, pass/fail/warning breakdowns, "
-                        "SKU match rates, damage rates, and carrier information."
-                    ],
-                    "column_configs": [
-                        {"column_name": "scan_date", "enable_format_assistance": True},
-                        {"column_name": "facility_id", "enable_format_assistance": True, "enable_entity_matching": True},
-                        {"column_name": "direction", "enable_format_assistance": True, "enable_entity_matching": True},
-                        {"column_name": "carrier_name", "enable_format_assistance": True, "enable_entity_matching": True},
-                        {"column_name": "status", "enable_format_assistance": True, "enable_entity_matching": True},
-                    ],
-                },
-                {
                     "identifier": f"{fqn}.{MODEL_PERF_TABLE}",
                     "description": [
                         "Monthly CV model performance metrics by facility. Tracks precision, "
@@ -116,7 +116,7 @@ def build_genie_payload(fqn: str, warehouse_id: str, username: str) -> dict[str,
                         {"column_name": "facility_id", "enable_format_assistance": True, "enable_entity_matching": True},
                     ],
                 },
-            ]
+            ], key=lambda t: t["identifier"])
         },
         "instructions": {
             "text_instructions": [

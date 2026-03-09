@@ -133,7 +133,8 @@ def build_inspection_events_sql(fqn: str, seed: int, scale: int = 1) -> str:
     minute_noise = _hash_int(seed, "insp_min", "d.inspection_date", "p.sku", "f.facility_id", "dk.dock_id", "it.itype", modulo=60)
     latency_noise = _hash_fraction(seed, "insp_lat", "d.inspection_date", "p.sku", "f.facility_id", "it.itype")
 
-    volume_path = f"/Volumes/{fqn}/{VOLUME_NAME}"
+    catalog, schema = fqn.split(".", 1)
+    volume_path = f"/Volumes/{catalog}/{schema}/{VOLUME_NAME}"
 
     return f"""
 CREATE OR REPLACE TABLE {fqn}.{INSPECTION_TABLE} AS
