@@ -88,7 +88,7 @@ def build_genie_payload(fqn: str, warehouse_id: str, username: str) -> dict[str,
                         "Individual CV inspection events at loading docks. Each row is one "
                         "item scanned by an AI camera for item counting, label verification, "
                         "or damage detection. Includes confidence scores, defect types, and "
-                        "image paths."
+                        "processing latency."
                     ],
                     "column_configs": [
                         {"column_name": "defect_type", "enable_format_assistance": True, "enable_entity_matching": True},

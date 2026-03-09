@@ -5,10 +5,9 @@ from __future__ import annotations
 from typing import Any, Optional
 
 from .cleanup import cleanup as _cleanup
-from .config import DEFAULT_SCHEMA_COMMENT, DEFAULT_SEED, VOLUME_NAME
+from .config import DEFAULT_SCHEMA_COMMENT, DEFAULT_SEED
 from .data import TABLE_COLUMN_COMMENTS, build_table_sqls, table_fqdns
 from .genie import create_or_replace_genie_space, resolve_warehouse_id
-from .images import generate_and_upload_images
 from .results import DeploymentResult, GenieSpaceResult
 from .validators import catalog_exists, current_catalog, resolve_namespace, sql_string
 
@@ -55,7 +54,6 @@ _SUMMARY_HTML = """\
       <td style="padding: 8px 12px;">Total</td>
       <td style="padding: 8px 12px;">%(total)s rows</td>
     </tr>
-    %(image_row)s
   </table>
   %(genie_button)s
   <p style="margin-top: 16px; color: #666; font-size: 13px;">
@@ -84,13 +82,11 @@ def deploy(
     warehouse_id: Optional[str] = "auto",
     seed: int = DEFAULT_SEED,
     scale: int = 1,
-    generate_images: bool = True,
 ) -> dict[str, Any]:
     """Deploy the NorthStar Logistics automated QC Genie data room.
 
     Creates a Unity Catalog schema, generates three deterministic synthetic
-    tables, optionally generates and uploads synthetic inspection images,
-    and provisions a fully-configured Genie space.
+    tables, and provisions a fully-configured Genie space.
 
     Parameters
     ----------
@@ -110,9 +106,6 @@ def deploy(
         Data size multiplier (default 1). ``scale=1`` generates 1 year of
         data (2025). ``scale=5`` generates 5 years (2021-2025), roughly
         5x the rows.
-    generate_images : bool
-        Whether to generate and upload synthetic inspection images to a
-        UC Volume (default True).
 
     Returns
     -------
@@ -187,20 +180,6 @@ def deploy(
             )
     _log("  Column comments applied")
 
-    # --- Images ---
-    volume_path: Optional[str] = None
-    images_generated = 0
-    if generate_images:
-        _log("Generating synthetic inspection images ...")
-        try:
-            volume_path, images_generated = generate_and_upload_images(
-                spark, ns.fqn, seed, log_fn=_log
-            )
-        except Exception as exc:
-            _log(f"WARNING: Image generation failed: {exc}")
-    else:
-        _log("Image generation skipped")
-
     # --- Genie ---
     resolved_wh, skip_reason = resolve_warehouse_id(spark, warehouse_id)
     if skip_reason:
@@ -235,8 +214,6 @@ def deploy(
         table_fqdns=table_fqdns(ns.fqn),
         warehouse_id=resolved_wh,
         genie=genie,
-        volume_path=volume_path,
-        images_generated=images_generated,
     )
 
     print()
@@ -247,8 +224,6 @@ def deploy(
     for t, cnt in tables.items():
         _log(f"  {t:30s} {cnt:>6,} rows")
     _log(f"  {'TOTAL':30s} {total:>6,} rows")
-    if images_generated:
-        _log(f"  Images: {images_generated} uploaded to {volume_path}")
     if genie.url:
         _log(f"  Genie: {genie.url}")
 
@@ -259,14 +234,6 @@ def deploy(
         f"</tr>"
         for i, (t, cnt) in enumerate(tables.items())
     )
-    image_row = (
-        f'<tr style="background: #e8f5e9;">'
-        f'<td style="padding: 8px 12px;">Inspection Images</td>'
-        f'<td style="padding: 8px 12px;">{images_generated} images</td>'
-        f"</tr>"
-        if images_generated
-        else ""
-    )
     genie_button = (
         (_GENIE_BUTTON_HTML % {"genie_url": genie.url}) if genie.url else ""
     )
@@ -276,7 +243,6 @@ def deploy(
             "fqn": ns.fqn,
             "table_rows": table_rows,
             "total": f"{total:,}",
-            "image_row": image_row,
             "genie_button": genie_button,
         }
     )

@@ -38,8 +38,6 @@ class DeploymentResult:
     table_fqdns: dict[str, str]
     warehouse_id: Optional[str]
     genie: GenieSpaceResult
-    volume_path: Optional[str] = None
-    images_generated: int = 0
 
     def as_dict(self) -> dict[str, Any]:
         payload = asdict(self)

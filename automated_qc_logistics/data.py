@@ -14,7 +14,6 @@ from .config import (
     MODEL_VERSIONS,
     PRODUCTS,
     SEVERITIES,
-    VOLUME_NAME,
     WAREHOUSES,
 )
 
@@ -42,7 +41,6 @@ TABLE_COLUMN_COMMENTS = {
         ),
         "severity": "Defect severity when applicable: critical, major, minor",
         "processing_time_ms": "Inference latency in milliseconds",
-        "image_path": "Volume path to the synthetic inspection image",
     },
     DOCK_SCANS_TABLE: {
         "scan_id": "Unique scan session identifier",
@@ -132,9 +130,6 @@ def build_inspection_events_sql(fqn: str, seed: int, scale: int = 1) -> str:
     hour_noise = _hash_int(seed, "insp_hour", "d.inspection_date", "p.sku", "f.facility_id", "dk.dock_id", modulo=10, offset=6)
     minute_noise = _hash_int(seed, "insp_min", "d.inspection_date", "p.sku", "f.facility_id", "dk.dock_id", "it.itype", modulo=60)
     latency_noise = _hash_fraction(seed, "insp_lat", "d.inspection_date", "p.sku", "f.facility_id", "it.itype")
-
-    catalog, schema = fqn.split(".", 1)
-    volume_path = f"/Volumes/{catalog}/{schema}/{VOLUME_NAME}"
 
     return f"""
 CREATE OR REPLACE TABLE {fqn}.{INSPECTION_TABLE} AS
@@ -285,13 +280,7 @@ SELECT
       WHEN itype = 'label_scan' THEN 80 + 120 * latency_noise
       ELSE 50 + 100 * latency_noise
     END AS INT
-  ) AS processing_time_ms,
-  CONCAT(
-    '{volume_path}/',
-    LOWER(REPLACE(category, ' & ', '_')), '_', itype, '_',
-    CASE WHEN result = 'pass' THEN 'pass' ELSE COALESCE(defect_type, 'fail') END,
-    '.png'
-  ) AS image_path
+  ) AS processing_time_ms
 FROM with_defect
 """.strip()
 

@@ -27,8 +27,6 @@ TABLE_NAMES = (
     MODEL_PERF_TABLE,
 )
 
-VOLUME_NAME = "inspection_images"
-
 PRODUCTS = [
     {"sku": "SKU-EL-001", "name": "Wireless Bluetooth Speaker", "category": "Electronics", "price": 49.99, "unit_cost": 28.50},
     {"sku": "SKU-EL-003", "name": "USB-C Hub 7-in-1", "category": "Electronics", "price": 39.99, "unit_cost": 22.00},
@@ -108,10 +106,3 @@ MODEL_VERSIONS = {
     "damage_detector": ("v4.0", "v4.1", "v4.2"),
 }
 
-CATEGORY_COLORS = {
-    "Electronics": (70, 130, 180),
-    "Food & Beverage": (60, 179, 113),
-    "Home & Garden": (210, 180, 140),
-    "Health & Wellness": (147, 112, 219),
-    "Clothing & Apparel": (240, 128, 128),
-}

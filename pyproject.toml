@@ -24,10 +24,6 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
 ]
-dependencies = [
-  "Pillow>=9.0",
-]
-
 [project.urls]
 Homepage = "https://github.com/macumberc/automated-qc-logistics"
 Repository = "https://github.com/macumberc/automated-qc-logistics"
