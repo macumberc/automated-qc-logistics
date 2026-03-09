@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "automated-qc-logistics"
+version = "1.0.0"
+description = "One-command deployment of a Databricks Genie space for computer-vision automated quality control at logistics loading docks"
+readme = "README.md"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.9"
+authors = [
+  {name = "Chad Macumber", email = "chad.macumber@databricks.com"}
+]
+keywords = ["databricks", "genie", "computer-vision", "quality-control", "logistics", "supply-chain"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "Topic :: Database",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+  "Pillow>=9.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/macumberc/automated-qc-logistics"
+Repository = "https://github.com/macumberc/automated-qc-logistics"
+
+[tool.setuptools.packages.find]
+include = ["automated_qc_logistics*"]
